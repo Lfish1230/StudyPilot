@@ -352,7 +352,7 @@ git commit -m "feat: add secure user authentication"
 - Consumes: `User`, `get_current_user`, and `AsyncSession` from Task 2.
 - Produces: `Course`, `get_owned_course(session, user_id, course_id) -> Course`, and CRUD routes under `/courses`.
 
-- [ ] **Step 1: Write failing CRUD and isolation tests**
+- [x] **Step 1: Write failing CRUD and isolation tests**
 
 ```python
 def test_course_crud_is_owner_scoped(client, user_factory, token_for):
@@ -366,19 +366,19 @@ def test_course_crud_is_owner_scoped(client, user_factory, token_for):
 
 Also test blank names, names longer than 80 characters, ordering by newest first, and unauthenticated requests.
 
-- [ ] **Step 2: Verify tests fail with 404**
+- [x] **Step 2: Verify tests fail with 404**
 
 Run `uv run pytest tests/courses/test_courses_api.py -v`. Expected: FAIL because routes are absent.
 
-- [ ] **Step 3: Implement the course model and service**
+- [x] **Step 3: Implement the course model and service**
 
 `Course` contains `id`, `owner_id`, `name`, `created_at`, and `updated_at`. Trim names and enforce `1..80` characters in Pydantic and the database. Use `ON DELETE CASCADE` from courses to every later course-owned table so course deletion clears metadata, vectors, conversations, quizzes, and attempts. `get_owned_course` must filter both `Course.id` and `Course.owner_id`; return 404 for missing and foreign resources to avoid leaking IDs.
 
-- [ ] **Step 4: Add routes and migration**
+- [x] **Step 4: Add routes and migration**
 
 Implement `POST /courses`, `GET /courses`, `GET /courses/{id}`, and `DELETE /courses/{id}`. Register the router and apply migration `0002_courses.py` with an owner/name index.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 ```powershell
 cd backend

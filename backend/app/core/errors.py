@@ -30,6 +30,11 @@ class UnauthorizedError(ApiError):
         super().__init__(401, code, message)
 
 
+class NotFoundError(ApiError):
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(404, code, message)
+
+
 async def api_error_handler(request: Request, exc: ApiError) -> JSONResponse:
     payload = ErrorResponse(
         code=exc.code,

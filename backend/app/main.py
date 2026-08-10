@@ -10,6 +10,7 @@ from app.core.errors import (
     validation_error_handler,
 )
 from app.core.middleware import RequestIdMiddleware
+from app.courses.router import router as courses_router
 
 
 def create_app() -> FastAPI:
@@ -30,6 +31,7 @@ def create_app() -> FastAPI:
         validation_error_handler,  # type: ignore[arg-type]
     )
     app.include_router(auth_router)
+    app.include_router(courses_router)
 
     @app.get("/health", tags=["system"])
     async def health() -> dict[str, str]:
