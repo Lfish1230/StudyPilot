@@ -1,6 +1,6 @@
 # StudyPilot Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Execution preference:** Use GPT-5.6 Sol and Codex-native implementation and review by default. Superpowers workflows are opt-in except `superpowers:verification-before-completion`, which remains automatic before completion claims. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build and deploy a portfolio-ready AI course assistant that turns text PDFs into cited RAG answers, quizzes, grading feedback, and learning analytics.
 
