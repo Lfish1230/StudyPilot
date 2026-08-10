@@ -1,0 +1,20 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: studypilot
+      POSTGRES_USER: studypilot
+      POSTGRES_PASSWORD: studypilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - studypilot_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studypilot -d studypilot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  studypilot_postgres:
+

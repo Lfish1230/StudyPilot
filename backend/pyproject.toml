@@ -1,0 +1,62 @@
+[project]
+name = "studypilot-backend"
+version = "0.1.0"
+description = "FastAPI backend for the StudyPilot learning assistant"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.16,<2",
+    "asyncpg>=0.30,<1",
+    "fastapi>=0.116,<1",
+    "openai>=1.99,<3",
+    "pgvector>=0.4,<1",
+    "pwdlib[argon2]>=0.2,<1",
+    "pydantic-settings>=2.10,<3",
+    "pyjwt>=2.10,<3",
+    "pymupdf>=1.26,<2",
+    "python-multipart>=0.0.20,<1",
+    "sqlalchemy[asyncio]>=2.0,<3",
+    "supabase>=2.18,<3",
+    "tenacity>=9,<10",
+    "tiktoken>=0.11,<1",
+    "uvicorn[standard]>=0.35,<1",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28,<1",
+    "mypy>=1.17,<2",
+    "pytest>=8.4,<9",
+    "pytest-asyncio>=1.1,<2",
+    "ruff>=0.12,<1",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
