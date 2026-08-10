@@ -1,8 +1,14 @@
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.auth.router import router as auth_router
 from app.core.config import get_settings
-from app.core.errors import ApiError, api_error_handler
+from app.core.errors import (
+    ApiError,
+    api_error_handler,
+    validation_error_handler,
+)
 from app.core.middleware import RequestIdMiddleware
 
 
@@ -19,6 +25,11 @@ def create_app() -> FastAPI:
         allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
     )
     app.add_exception_handler(ApiError, api_error_handler)  # type: ignore[arg-type]
+    app.add_exception_handler(
+        RequestValidationError,
+        validation_error_handler,  # type: ignore[arg-type]
+    )
+    app.include_router(auth_router)
 
     @app.get("/health", tags=["system"])
     async def health() -> dict[str, str]:
@@ -28,4 +39,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-

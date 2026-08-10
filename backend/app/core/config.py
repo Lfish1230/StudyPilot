@@ -18,6 +18,7 @@ class Settings(BaseSettings):
         "postgresql+asyncpg://studypilot:studypilot@localhost:5432/studypilot"
     )
     jwt_secret: str = "change-me-before-deploying"
+    jwt_access_token_minutes: int = Field(default=60, gt=0)
     cors_origins: str = "http://localhost:5173"
 
     dashscope_api_key: str = ""
@@ -42,9 +43,7 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [
-            origin.strip()
-            for origin in self.cors_origins.split(",")
-            if origin.strip()
+            origin.strip() for origin in self.cors_origins.split(",") if origin.strip()
         ]
 
 

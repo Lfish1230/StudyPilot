@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16,<2",
     "asyncpg>=0.30,<1",
+    "email-validator>=2.2,<3",
     "fastapi>=0.116,<1",
     "openai>=1.99,<3",
     "pgvector>=0.4,<1",
@@ -59,4 +60,3 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
-

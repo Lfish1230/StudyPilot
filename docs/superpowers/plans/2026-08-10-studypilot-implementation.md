@@ -230,7 +230,7 @@ git commit -m "chore: scaffold StudyPilot applications"
 - Consumes: `Settings` and `create_app()` from Task 1.
 - Produces: `User`, `get_current_user() -> User`, `POST /auth/register`, `POST /auth/login`, `GET /auth/me`, and async database sessions.
 
-- [ ] **Step 1: Start the test database and write failing auth tests**
+- [x] **Step 1: Start the test database and write failing auth tests**
 
 Use Docker Compose, run Alembic against a dedicated `studypilot_test` database, and provide fixtures `client`, `db_session`, `user_factory`, and `auth_headers` in `tests/conftest.py`.
 
@@ -261,13 +261,13 @@ def test_duplicate_email_uses_stable_error_shape(client):
     assert response.json()["request_id"]
 ```
 
-- [ ] **Step 2: Run tests and confirm the missing routes fail**
+- [x] **Step 2: Run tests and confirm the missing routes fail**
 
 Run `cd backend; uv run pytest tests/auth/test_auth_api.py -v`.
 
 Expected: FAIL with 404 responses.
 
-- [ ] **Step 3: Implement persistence, migration, hashing, and JWT**
+- [x] **Step 3: Implement persistence, migration, hashing, and JWT**
 
 Use SQLAlchemy 2 declarative models with UUID primary keys and timezone-aware timestamps. `User` has unique lowercase `email`, `password_hash`, and `created_at`. Implement:
 
@@ -315,11 +315,11 @@ def decode_access_token(token: str) -> UUID:
 
 Reject passwords shorter than 10 characters. Normalize email with `strip().lower()`. Return `401 invalid_credentials` for both unknown email and incorrect password. Never expose `password_hash`.
 
-- [ ] **Step 4: Register routes and global API errors**
+- [x] **Step 4: Register routes and global API errors**
 
 Include `/auth` router in `create_app()`. Convert domain exceptions to the shared `{code, message, request_id}` response. Ensure validation errors also include a request ID and a stable `validation_error` code.
 
-- [ ] **Step 5: Run migration and auth verification**
+- [x] **Step 5: Run migration and auth verification**
 
 ```powershell
 cd backend
@@ -330,7 +330,7 @@ uv run ruff check app tests
 
 Expected: all pass.
 
-- [ ] **Step 6: Commit authentication**
+- [x] **Step 6: Commit authentication**
 
 ```powershell
 git add backend/app backend/alembic* backend/tests
