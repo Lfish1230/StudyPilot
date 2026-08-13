@@ -975,11 +975,11 @@ git commit -m "feat: add quiz and learning analytics interfaces"
 - Consumes: document ingestion, retrieval, and answer APIs.
 - Produces: `EvalCase`, `EvalMetrics`, `evaluate_cases(cases, client)`, and JSON/Markdown evaluation reports.
 
-- [ ] **Step 1: Select a redistributable source document and record its license**
+- [x] **Step 1: Select a redistributable source document and record its license**
 
 Use a public-domain or explicitly permissive Chinese computer-science course PDF. Store its canonical source URL, license, SHA-256, and retrieval date in `evals/README.md`. Do not commit a PDF unless its license explicitly allows redistribution; otherwise provide `download_source.ps1` with the fixed official URL and SHA-256 verification.
 
-- [ ] **Step 2: Create at least 20 fully labeled cases**
+- [x] **Step 2: Create at least 20 fully labeled cases**
 
 Each JSONL row must follow:
 
@@ -990,15 +990,15 @@ Each JSONL row must follow:
 
 Include at least 15 answerable and 5 unanswerable questions, distributed across the document rather than one chapter.
 
-- [ ] **Step 3: Write failing metric tests**
+- [x] **Step 3: Write failing metric tests**
 
 Test `retrieval_hit_at_5`, citation-page accuracy, refusal accuracy, mean latency, and mean token use with fixed synthetic cases, including zero denominators.
 
-- [ ] **Step 4: Implement the evaluation runner**
+- [x] **Step 4: Implement the evaluation runner**
 
 The runner creates or reuses an evaluation course, ingests the fixed document, waits for `ready`, sends every question, records raw result JSON, and writes a dated Markdown summary. Include model IDs, embedding dimension, retrieval threshold, git commit, dataset hash, date, and total estimated token use.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 ```powershell
 cd backend

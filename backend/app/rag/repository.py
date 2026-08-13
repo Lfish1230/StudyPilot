@@ -8,6 +8,9 @@ from app.documents.chunker import TextChunk
 from app.documents.model import Document, DocumentStatus
 from app.rag.model import DocumentChunk
 
+RETRIEVAL_LIMIT = 5
+RETRIEVAL_MAX_DISTANCE = 0.40
+
 
 @dataclass(frozen=True, slots=True)
 class RetrievedChunk:
@@ -68,8 +71,8 @@ async def retrieve_chunks(
     session: AsyncSession,
     course_id: UUID,
     query_vector: list[float],
-    limit: int = 5,
-    max_distance: float = 0.40,
+    limit: int = RETRIEVAL_LIMIT,
+    max_distance: float = RETRIEVAL_MAX_DISTANCE,
 ) -> list[RetrievedChunk]:
     distance = DocumentChunk.embedding.cosine_distance(query_vector).label("distance")
     rows = (
@@ -82,7 +85,7 @@ async def retrieve_chunks(
                 distance <= max_distance,
             )
             .order_by(distance)
-            .limit(min(limit, 5))
+            .limit(min(limit, RETRIEVAL_LIMIT))
         )
     ).all()
     return [

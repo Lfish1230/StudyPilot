@@ -1,0 +1,20 @@
+{"id":"cn-001","question":"操作系统通过哪些四类工作为程序提供运行环境？","answerable":true,"expected_pages":[7],"required_terms":["共享","抽象","多路复用","交互"]}
+{"id":"cn-002","question":"exec 系统调用成功后会怎样改变当前进程？","answerable":true,"expected_pages":[9],"required_terms":["内存镜像","ELF","入口"]}
+{"id":"cn-003","question":"管道在什么情况下会让 read 返回 0？","answerable":true,"expected_pages":[11],"required_terms":["写端口","关闭","返回 0"]}
+{"id":"cn-004","question":"unlink 后文件的 inode 和磁盘空间何时才会被清空？","answerable":true,"expected_pages":[13],"required_terms":["链接数","0","inode"]}
+{"id":"cn-005","question":"allocproc 如何准备新进程第一次运行时的内核栈？","answerable":true,"expected_pages":[16],"required_terms":["forkret","trapret","context"]}
+{"id":"cn-006","question":"xv6 如何保证进程只能访问自己的用户内存？","answerable":true,"expected_pages":[21],"required_terms":["PTE_U","页表","虚拟页"]}
+{"id":"cn-007","question":"x86 执行 int 指令发生特权级转换时，为什么不能使用用户栈保存状态？","answerable":true,"expected_pages":[26],"required_terms":["用户栈","任务段","内核模式"]}
+{"id":"cn-008","question":"xv6 如何配置时钟中断来支持进程时间片？","answerable":true,"expected_pages":[29],"required_terms":["LAPIC","IRQ_TIMER","时钟"]}
+{"id":"cn-009","question":"xv6 的 acquire 为什么使用 xchg 指令？","answerable":true,"expected_pages":[34],"required_terms":["原子","互斥","locked"]}
+{"id":"cn-010","question":"swtch 在上下文切换时保存和恢复了什么？","answerable":true,"expected_pages":[38],"required_terms":["寄存器","栈指针","上下文"]}
+{"id":"cn-011","question":"sleep 和 wakeup 如何避免丢失唤醒？","answerable":true,"expected_pages":[42],"required_terms":["ptable.lock","进程状态","RUNNABLE"]}
+{"id":"cn-012","question":"xv6 块缓冲层承担哪两个主要任务？","answerable":true,"expected_pages":[47],"required_terms":["同步","缓存","LRU"]}
+{"id":"cn-013","question":"iget 与 ilock 为什么要分开设计？","answerable":true,"expected_pages":[51],"required_terms":["引用","锁","死锁"]}
+{"id":"cn-014","question":"教材指出 xv6 文件系统缺少哪些现代文件系统特征？","answerable":true,"expected_pages":[55],"required_terms":["快照","增加机制"]}
+{"id":"cn-015","question":"BIOS 把引导扇区加载到哪里，引导加载器随后要完成什么？","answerable":true,"expected_pages":[58],"required_terms":["0x7c00","内核","控制权"]}
+{"id":"cn-016","question":"这份教材如何评价量子纠错码的容错阈值？","answerable":false,"expected_pages":[],"required_terms":[]}
+{"id":"cn-017","question":"xv6 在 RISC-V Sv39 页表中如何设置 A 和 D 位？","answerable":false,"expected_pages":[],"required_terms":[]}
+{"id":"cn-018","question":"教材给出了 Kubernetes 调度器的哪些扩展点？","answerable":false,"expected_pages":[],"required_terms":[]}
+{"id":"cn-019","question":"xv6 的 TCP 拥塞控制采用 Reno 还是 Cubic？","answerable":false,"expected_pages":[],"required_terms":[]}
+{"id":"cn-020","question":"书中比较了 ext4 与 Btrfs 的哪些性能基准？","answerable":false,"expected_pages":[],"required_terms":[]}
