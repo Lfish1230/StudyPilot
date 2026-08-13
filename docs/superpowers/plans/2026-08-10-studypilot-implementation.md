@@ -469,7 +469,7 @@ git commit -m "feat: validate and store private PDF uploads"
 - Consumes: `ObjectStorage`, `Document`, and document status routes from Task 4.
 - Produces: `PdfPage(page_number: int, text: str)`, `TextChunk(page_number: int, content: str, token_count: int)`, `EmbeddingClient`, `ChunkSink`, `parse_pdf(data)`, `chunk_pages(pages)`, and a provider-independent `process_document(document_id)`.
 
-- [ ] **Step 1: Write failing pure parser and chunker tests**
+- [x] **Step 1: Write failing pure parser and chunker tests**
 
 Tests must prove that page numbers start at 1, whitespace is normalized, blank pages are ignored, a document with no useful text raises `ScannedPdfError`, pages never mix in a chunk, chunks stay at or below 700 tokens except a single indivisible token sequence, and overlap is approximately 100 tokens.
 
@@ -481,19 +481,19 @@ def test_chunks_never_cross_page_boundaries(tokenizer):
     assert all(not ("alpha" in c.content and "beta" in c.content) for c in chunks)
 ```
 
-- [ ] **Step 2: Run tests and verify missing functions fail**
+- [x] **Step 2: Run tests and verify missing functions fail**
 
 Run `uv run pytest tests/documents/test_parser.py tests/documents/test_chunker.py -v`.
 
-- [ ] **Step 3: Implement parser and chunker without AI calls**
+- [x] **Step 3: Implement parser and chunker without AI calls**
 
 Use PyMuPDF opened from bytes. Reject more than 300 pages before extraction. Normalize repeated spaces while preserving paragraph breaks. Use `tiktoken` for repeatable token counts. Return typed dataclasses; do not access the database in these pure modules.
 
-- [ ] **Step 4: Write failing processor state tests**
+- [x] **Step 4: Write failing processor state tests**
 
 Test the transitions `uploaded -> processing -> ready`, parser failure to `failed/scanned_pdf`, provider failure to `failed/embedding_unavailable`, retry deleting previous chunks before inserting replacements, and startup recovery marking jobs older than 15 minutes failed.
 
-- [ ] **Step 5: Implement the recoverable processor boundary**
+- [x] **Step 5: Implement the recoverable processor boundary**
 
 Define the processor with explicit dependencies:
 
@@ -544,11 +544,11 @@ async def process_document(
 
 `EmbeddingClient.embed(texts)` and `ChunkSink.replace(document_id, course_id, chunks, embeddings)` are Protocol methods created in this task. Implement `mark_document_failed` and `mark_document_ready` in the same module as short fresh-session transactions that clear `processing_started_at`. The processor creates its own database session rather than reusing a request session, delegates atomic replacement to `ChunkSink`, and stores only sanitized failure codes/messages. Tests use deterministic fake implementations of both protocols.
 
-- [ ] **Step 6: Implement and test stale-job recovery**
+- [x] **Step 6: Implement and test stale-job recovery**
 
 Implement `recover_stale_document_jobs(session, cutoff_minutes=15)` as a database update from stale `processing` rows to `failed` with code `processing_interrupted`. Verify exact cutoff behavior with a frozen clock. Production scheduling is wired after the pgvector and Qwen adapters exist in Task 6.
 
-- [ ] **Step 7: Verify and commit**
+- [x] **Step 7: Verify and commit**
 
 ```powershell
 cd backend
