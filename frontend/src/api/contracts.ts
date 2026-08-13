@@ -41,3 +41,46 @@ export interface CourseDocument {
   created_at: string;
   updated_at: string;
 }
+
+export interface Conversation {
+  id: string;
+  course_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MessageCitation {
+  source_id: string;
+  document_id: string;
+  document_name: string;
+  page_number: number;
+  snippet: string;
+}
+
+export interface ConversationMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  refused: boolean;
+  model: string | null;
+  input_tokens: number;
+  output_tokens: number;
+  latency_ms: number | null;
+  citations: MessageCitation[];
+  created_at: string;
+}
+
+export interface WeakTopic {
+  knowledge_point: string;
+  answered_count: number;
+  wrong_count: number;
+  weak_score: number;
+}
+
+export interface CourseAnalytics {
+  total_questions: number;
+  total_attempts: number;
+  average_percent_score: number;
+  weak_topics: WeakTopic[];
+  recent_attempts: unknown[];
+}

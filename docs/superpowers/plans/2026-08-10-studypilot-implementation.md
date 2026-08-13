@@ -895,19 +895,19 @@ git commit -m "feat: add course workspace and PDF management"
 - Consumes: conversation routes and `AssistantAnswer` from Task 7.
 - Produces: conversation selection, cited messages, refusal state, citation drawer, and quota/error feedback.
 
-- [ ] **Step 1: Write failing chat interaction tests**
+- [x] **Step 1: Write failing chat interaction tests**
 
 Test empty composer disabled, one active send at a time, optimistic user message, loading indicator, successful cited answer, refusal text, clicking `[1]` opens document/page/snippet, network retry preserving draft, and 429 quota message.
 
-- [ ] **Step 2: Implement chat state with TanStack Query**
+- [x] **Step 2: Implement chat state with TanStack Query**
 
 Create a conversation lazily on first send. Invalidate message history after success. Cancel in-flight requests when leaving the course. Render assistant text as plain text with recognized citation tokens converted into buttons; do not render arbitrary model HTML.
 
-- [ ] **Step 3: Implement the approved three-column layout**
+- [x] **Step 3: Implement the approved three-column layout**
 
 The center column contains messages and composer. The right column shows ready documents, “generate quiz” navigation, and the analytics summary. On narrow screens, the right column moves below chat and citations open as a modal drawer.
 
-- [ ] **Step 4: Verify and commit**
+- [x] **Step 4: Verify and commit**
 
 ```powershell
 cd frontend
