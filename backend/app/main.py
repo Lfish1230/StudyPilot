@@ -22,6 +22,7 @@ from app.documents.jobs import recover_stale_document_jobs
 from app.documents.processor import process_document
 from app.documents.router import router as documents_router
 from app.documents.storage import ObjectStorage, create_object_storage
+from app.quizzes.router import router as quizzes_router
 from app.rag.repository import PgVectorChunkSink
 from app.rag.router import router as rag_router
 
@@ -82,6 +83,7 @@ def create_app(
     app.include_router(courses_router)
     app.include_router(documents_router)
     app.include_router(rag_router)
+    app.include_router(quizzes_router)
 
     @app.get("/health", tags=["system"])
     async def health() -> dict[str, str]:

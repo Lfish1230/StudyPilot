@@ -710,25 +710,25 @@ git commit -m "feat: add grounded conversations with citations"
 - Consumes: `ChatClient`, ready documents, chunk retrieval, and course ownership.
 - Produces: `Quiz`, `Question`, `GeneratedQuiz`, `generate_quiz(course_id, document_ids, counts)`, create/list/get routes.
 
-- [ ] **Step 1: Write failing structured-output tests**
+- [x] **Step 1: Write failing structured-output tests**
 
 Define Pydantic discriminated unions `MultipleChoiceQuestion` and `ShortAnswerQuestion`. Assert exactly four unique options for multiple choice, answer is one of the options, non-empty `knowledge_point`, difficulty in `easy|medium|hard`, source page exists in selected documents, and short answer contains `rubric_points`.
 
 Test one invalid model response followed by a valid retry, then two invalid responses raising `quiz_generation_invalid`.
 
-- [ ] **Step 2: Implement generator with one repair attempt**
+- [x] **Step 2: Implement generator with one repair attempt**
 
 The request schema accepts `document_ids`, `multiple_choice_count` from 1 to 10, and `short_answer_count` from 0 to 5, with a combined maximum of 10. Build context only from selected ready documents. Call the model with JSON Schema response format; on Pydantic failure, retry once with the validation errors.
 
-- [ ] **Step 3: Write failing API and quota tests**
+- [x] **Step 3: Write failing API and quota tests**
 
 Cover generation, list, detail without answers before submission, selected-document ownership, non-ready documents, and `429 quiz_quota_exceeded` after 10 UTC-day generations.
 
-- [ ] **Step 4: Persist quizzes and questions safely**
+- [x] **Step 4: Persist quizzes and questions safely**
 
 Store standard answers and rubrics in the database but omit them from student-facing quiz detail. Store source document and page on every question. Use a transaction so a partial quiz is never visible.
 
-- [ ] **Step 5: Migrate, verify, and commit**
+- [x] **Step 5: Migrate, verify, and commit**
 
 ```powershell
 cd backend
