@@ -406,7 +406,7 @@ git commit -m "feat: add owner-scoped courses"
 - Consumes: `get_owned_course` and `get_current_user`.
 - Produces: `Document`, `DocumentStatus`, `ObjectStorage` protocol, upload/list/get/delete/retry routes, and `schedule_document_processing(document_id: UUID)` hook.
 
-- [ ] **Step 1: Define the storage protocol and failing tests**
+- [x] **Step 1: Define the storage protocol and failing tests**
 
 ```python
 class ObjectStorage(Protocol):
@@ -422,27 +422,27 @@ class ObjectStorage(Protocol):
 
 Write API tests for a valid `%PDF-` file, a 20 MB + 1 byte rejection, MIME mismatch, bad magic bytes, foreign course, private generated object key, list, get, delete, and `429 upload_quota_exceeded` after five UTC-day uploads. Use `FakeObjectStorage` in tests.
 
-- [ ] **Step 2: Confirm upload tests fail**
+- [x] **Step 2: Confirm upload tests fail**
 
 Run `uv run pytest tests/documents/test_upload_api.py tests/documents/test_storage.py -v`.
 
 Expected: FAIL because document routes and storage do not exist.
 
-- [ ] **Step 3: Implement metadata and validation**
+- [x] **Step 3: Implement metadata and validation**
 
 `Document` fields: `id`, `course_id`, `original_name`, `object_key`, `size_bytes`, `page_count`, `status`, `failure_code`, `failure_message`, `processing_started_at`, timestamps. Status values are `uploaded`, `processing`, `ready`, `failed`.
 
 Read uploads with a hard byte limit, validate `application/pdf`, validate `%PDF-` magic bytes, generate object keys as `{owner_id}/{course_id}/{document_id}.pdf`, and never use the client filename in a path. Before storing, count the owner's UTC-day documents and return `429 upload_quota_exceeded` at the configured limit of 5.
 
-- [ ] **Step 4: Implement Supabase and fake adapters**
+- [x] **Step 4: Implement Supabase and fake adapters**
 
 `SupabaseObjectStorage` uses the configured private bucket. Because the Supabase storage client is synchronous, call it through `asyncio.to_thread` behind the async protocol. Convert provider errors to `storage_unavailable` without returning credentials or raw provider payloads. Deleting a document removes the object first; if storage deletion fails, keep database metadata and return a retryable error.
 
-- [ ] **Step 5: Add owner-scoped routes**
+- [x] **Step 5: Add owner-scoped routes**
 
 Implement `POST /courses/{course_id}/documents`, `GET /courses/{course_id}/documents`, `GET /documents/{id}`, `DELETE /documents/{id}`, and `POST /documents/{id}/retry`. The exact deliverable for this task stores a successful upload with status `uploaded` and exposes an injected scheduler callable that defaults to a no-op in this task's application wiring. Task 6 replaces that injected callable with the production background processor after its required adapters exist.
 
-- [ ] **Step 6: Migrate, verify, and commit**
+- [x] **Step 6: Migrate, verify, and commit**
 
 ```powershell
 cd backend

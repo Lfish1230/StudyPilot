@@ -22,6 +22,7 @@ os.environ["JWT_SECRET"] = "test-only-secret-that-is-long-enough"
 os.environ["ENVIRONMENT"] = "testing"
 
 from app.core.database import SessionLocal  # noqa: E402
+from app.documents.storage import FakeObjectStorage  # noqa: E402
 from app.main import create_app  # noqa: E402
 
 
@@ -66,8 +67,24 @@ def clean_database(migrated_test_database: None) -> Iterator[None]:
 
 
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    with TestClient(create_app()) as test_client:
+def object_storage() -> FakeObjectStorage:
+    return FakeObjectStorage()
+
+
+@pytest.fixture
+def scheduled_document_ids() -> list[str]:
+    return []
+
+
+@pytest.fixture
+def client(
+    object_storage: FakeObjectStorage,
+    scheduled_document_ids: list[str],
+) -> Iterator[TestClient]:
+    async def scheduler(document_id: object) -> None:
+        scheduled_document_ids.append(str(document_id))
+
+    with TestClient(create_app(object_storage, scheduler)) as test_client:
         yield test_client
 
 

@@ -1,0 +1,1 @@
+"""Private course document management."""
