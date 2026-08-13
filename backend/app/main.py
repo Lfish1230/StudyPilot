@@ -6,11 +6,12 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.ai.fake import FakeChatClient, FakeEmbeddingClient
 from app.ai.interfaces import ChatClient, ChunkSink, EmbeddingClient
 from app.ai.qwen import QwenChatClient, QwenEmbeddingClient
 from app.analytics.router import router as analytics_router
 from app.auth.router import router as auth_router
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 from app.core.database import SessionLocal
 from app.core.errors import (
     ApiError,
@@ -22,12 +23,33 @@ from app.courses.router import router as courses_router
 from app.documents.jobs import recover_stale_document_jobs
 from app.documents.processor import process_document
 from app.documents.router import router as documents_router
-from app.documents.storage import ObjectStorage, create_object_storage
+from app.documents.storage import (
+    FakeObjectStorage,
+    ObjectStorage,
+    create_object_storage,
+)
 from app.quizzes.router import router as quizzes_router
 from app.rag.repository import PgVectorChunkSink
 from app.rag.router import router as rag_router
 
 DocumentScheduler = Callable[[UUID], Awaitable[None]]
+
+
+def create_ai_clients(settings: Settings) -> tuple[EmbeddingClient, ChatClient]:
+    provider = settings.ai_provider.strip().lower()
+    if provider == "fake":
+        if settings.environment != "test":
+            raise RuntimeError(
+                "AI_PROVIDER=fake is restricted to ENVIRONMENT=test and must never "
+                "be enabled in a deployed environment."
+            )
+        return FakeEmbeddingClient(settings.embedding_dimension), FakeChatClient()
+    if provider != "qwen":
+        raise RuntimeError(f"Unsupported AI_PROVIDER: {settings.ai_provider}")
+    return (
+        QwenEmbeddingClient.from_settings(settings),
+        QwenChatClient.from_settings(settings),
+    )
 
 
 def create_app(
@@ -38,10 +60,16 @@ def create_app(
     chat_client: ChatClient | None = None,
 ) -> FastAPI:
     settings = get_settings()
-    storage = object_storage or create_object_storage(settings)
-    embeddings = embedding_client or QwenEmbeddingClient.from_settings(settings)
+    default_embeddings, default_chat = create_ai_clients(settings)
+    storage = object_storage or (
+        FakeObjectStorage()
+        if settings.environment == "test"
+        and settings.ai_provider.strip().lower() == "fake"
+        else create_object_storage(settings)
+    )
+    embeddings = embedding_client or default_embeddings
     sink = chunk_sink or PgVectorChunkSink(SessionLocal)
-    chat = chat_client or QwenChatClient.from_settings(settings)
+    chat = chat_client or default_chat
 
     async def production_scheduler(document_id: UUID) -> None:
         await process_document(

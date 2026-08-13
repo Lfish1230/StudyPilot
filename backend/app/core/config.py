@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     jwt_access_token_minutes: int = Field(default=60, gt=0)
     cors_origins: str = "http://localhost:5173"
 
+    ai_provider: str = "qwen"
     dashscope_api_key: str = ""
     dashscope_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     chat_model: str = "qwen-plus"

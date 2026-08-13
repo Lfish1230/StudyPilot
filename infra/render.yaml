@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: studypilot-api
+    runtime: python
+    plan: starter
+    rootDir: backend
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    preDeployCommand: uv run alembic upgrade head
+    startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.11
+      - key: ENVIRONMENT
+        value: production
+      - key: AI_PROVIDER
+        value: qwen
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
+      - key: DASHSCOPE_API_KEY
+        sync: false
+      - key: DASHSCOPE_BASE_URL
+        value: https://dashscope.aliyuncs.com/compatible-mode/v1
+      - key: CHAT_MODEL
+        value: qwen-plus
+      - key: EMBEDDING_MODEL
+        value: text-embedding-v4
+      - key: EMBEDDING_DIMENSION
+        value: "1024"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: course-pdfs

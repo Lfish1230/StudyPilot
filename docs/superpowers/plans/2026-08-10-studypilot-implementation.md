@@ -1033,15 +1033,15 @@ git commit -m "feat: add reproducible RAG quality evaluation"
 - Consumes: the complete application from Tasks 1–14.
 - Produces: CI, deployment manifests, public documentation, a repeatable demo, and an interview-ready project narrative.
 
-- [ ] **Step 1: Write the failing Playwright core-flow test**
+- [x] **Step 1: Write the failing Playwright core-flow test**
 
 Automate: register, create course, upload the licensed fixture PDF, wait for `ready`, ask a grounded question, open its citation, generate a two-question quiz, submit it, and view analytics. Use a deterministic fake-AI mode in CI configured only by `AI_PROVIDER=fake`; production must reject fake mode.
 
-- [ ] **Step 2: Implement CI-safe fake providers**
+- [x] **Step 2: Implement CI-safe fake providers**
 
 Create deterministic embedding/chat adapters in `backend/app/ai/fake.py`. Activate them only when `ENVIRONMENT=test` and `AI_PROVIDER=fake`; application startup must fail if fake provider is selected in any other environment. `test_fake_provider_guard.py` proves both the allowed test configuration and rejected production configuration.
 
-- [ ] **Step 3: Run the E2E test locally**
+- [x] **Step 3: Run the E2E test locally**
 
 ```powershell
 docker compose -f infra/docker-compose.yml up -d db
@@ -1056,19 +1056,19 @@ npx playwright test e2e/core-flow.spec.ts
 
 Expected: the complete flow passes without external model calls.
 
-- [ ] **Step 4: Add GitHub Actions**
+- [x] **Step 4: Add GitHub Actions**
 
 Use a `pgvector/pgvector:pg16` service. Jobs must run backend Ruff, mypy, migrations, pytest; frontend Vitest and production build; then Playwright using the fake provider. Cache uv and npm dependencies. Do not put real API keys in CI.
 
-- [ ] **Step 5: Add deployment declarations**
+- [x] **Step 5: Add deployment declarations**
 
 `infra/render.yaml` runs `uv sync --frozen`, `uv run alembic upgrade head`, then Uvicorn. `frontend/vercel.json` configures SPA route rewrites. Vercel builds the `frontend` directory. Supabase provides PostgreSQL, pgvector extension, and a private `course-pdfs` bucket. `backend/scripts/seed_demo.py` idempotently creates the documented demo user and one empty sample course using environment-provided demo credentials; it never contains a committed password. `docs/deployment.md` lists exact environment variables, CORS domain, migration and seed commands, cold-start behavior, quota settings, and rollback steps.
 
-- [ ] **Step 6: Write portfolio-grade README and interview notes**
+- [x] **Step 6: Write portfolio-grade README and interview notes**
 
 README must contain: problem, live demo and demo account, feature screenshots, architecture, data flow, local setup, API docs link, security decisions, RAG evaluation table, known limitations, and roadmap. Extend the Playwright flow to capture deterministic `course-workspace.png` and `quiz-result.png` at 1440×900, then verify both images visually before committing them. `docs/interview-notes.md` must answer: why pgvector, how citations work, how hallucinations are reduced, why no LangChain, how cross-user access is prevented, how invalid JSON is handled, and what would change at production scale.
 
-- [ ] **Step 7: Run the full release gate**
+- [x] **Step 7: Run the full release gate**
 
 ```powershell
 cd backend
@@ -1087,7 +1087,7 @@ git status --short
 
 Expected: every command exits 0; only intentional documentation/evaluation result changes remain unstaged.
 
-- [ ] **Step 8: Commit the release assets**
+- [x] **Step 8: Commit the release assets**
 
 ```powershell
 git add .github .env.example README.md docs infra backend/app/ai/fake.py backend/tests/ai/test_fake_provider_guard.py backend/scripts/seed_demo.py frontend/e2e frontend/playwright.config.ts frontend/vercel.json

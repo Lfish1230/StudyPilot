@@ -13,4 +13,7 @@ frontend/vite.config.js
 frontend/vite.config.d.ts
 coverage/
 outputs/
+frontend/test-results/
+frontend/playwright-report/
+frontend/e2e/artifacts/
 .DS_Store

@@ -17,7 +17,7 @@ class Base(DeclarativeBase):
 
 settings = get_settings()
 engine_options: dict[str, object] = {"pool_pre_ping": True}
-if settings.environment == "testing":
+if settings.environment in {"test", "testing"}:
     engine_options["poolclass"] = NullPool
 
 engine = create_async_engine(settings.database_url, **engine_options)

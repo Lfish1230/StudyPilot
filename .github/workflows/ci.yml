@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: studypilot
+          POSTGRES_USER: studypilot
+          POSTGRES_PASSWORD: studypilot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U studypilot -d studypilot"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql+asyncpg://studypilot:studypilot@localhost:5432/studypilot
+      JWT_SECRET: ci-only-secret-that-is-never-used-outside-actions
+      ENVIRONMENT: testing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - run: uv sync --frozen --dev
+      - run: uv run ruff check app tests
+      - run: uv run mypy app
+      - run: uv run alembic upgrade head
+      - run: uv run pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm test -- --run
+      - run: npm run build
+
+  e2e:
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: studypilot
+          POSTGRES_USER: studypilot
+          POSTGRES_PASSWORD: studypilot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U studypilot -d studypilot"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://studypilot:studypilot@localhost:5432/studypilot
+      JWT_SECRET: ci-only-secret-that-is-never-used-outside-actions
+      ENVIRONMENT: test
+      AI_PROVIDER: fake
+      CORS_ORIGINS: http://127.0.0.1:5173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: uv sync --frozen --dev
+        working-directory: backend
+      - run: uv run alembic upgrade head
+        working-directory: backend
+      - run: uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 > ../backend.log 2>&1 &
+        working-directory: backend
+      - run: |
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:8000/health && exit 0
+            sleep 1
+          done
+          exit 1
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npx playwright test
+        working-directory: frontend
+      - if: failure()
+        run: cat backend.log
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7
