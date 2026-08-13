@@ -10,12 +10,21 @@ from app.core.config import Settings, get_settings
 from app.core.database import get_db_session
 from app.quizzes.models import Question, Quiz
 from app.quizzes.schemas import (
+    AnswerResultResponse,
+    QuizAttemptResponse,
     QuizCreate,
     QuizDetailResponse,
     QuizQuestionResponse,
+    QuizSubmission,
     QuizSummaryResponse,
 )
-from app.quizzes.service import create_quiz, get_owned_quiz, list_quizzes
+from app.quizzes.service import (
+    SubmissionResult,
+    create_quiz,
+    get_owned_quiz,
+    list_quizzes,
+    submit_quiz,
+)
 
 router = APIRouter(tags=["quizzes"])
 DatabaseSession = Annotated[AsyncSession, Depends(get_db_session)]
@@ -44,6 +53,44 @@ def _question_response(question: Question) -> QuizQuestionResponse:
         source_document_id=question.source_document_id,
         source_document_name=question.source_document_name,
         source_page=question.source_page,
+    )
+
+
+def _attempt_response(result: SubmissionResult) -> QuizAttemptResponse:
+    attempt = result.attempt
+    return QuizAttemptResponse(
+        id=attempt.id,
+        quiz_id=attempt.quiz_id,
+        total_score=attempt.total_score,
+        max_score=attempt.max_score,
+        percentage=(attempt.total_score / attempt.max_score * 100),
+        submitted_at=attempt.submitted_at,
+        answers=[
+            AnswerResultResponse(
+                question_id=answer.question_id,
+                type=str(result.questions[answer.question_id].type),
+                prompt=result.questions[answer.question_id].prompt,
+                user_answer=answer.user_answer,
+                standard_answer=result.questions[answer.question_id].standard_answer,
+                explanation=result.questions[answer.question_id].explanation,
+                score=answer.score,
+                is_correct=answer.is_correct,
+                feedback=answer.feedback,
+                missing_points=answer.missing_points,
+                knowledge_point=result.questions[answer.question_id].knowledge_point,
+                source_document_id=(
+                    result.questions[answer.question_id].source_document_id
+                ),
+                source_document_name=(
+                    result.questions[answer.question_id].source_document_name
+                ),
+                source_page=result.questions[answer.question_id].source_page,
+            )
+            for answer in sorted(
+                attempt.answers,
+                key=lambda item: result.questions[item.question_id].position,
+            )
+        ],
     )
 
 
@@ -84,3 +131,15 @@ async def get_quiz(
         **_summary(quiz).model_dump(),
         questions=[_question_response(question) for question in quiz.questions],
     )
+
+
+@router.post("/quizzes/{quiz_id}/submit", response_model=QuizAttemptResponse)
+async def submit_quiz_attempt(
+    quiz_id: UUID,
+    payload: QuizSubmission,
+    user: CurrentUser,
+    session: DatabaseSession,
+    chat: Chat,
+) -> QuizAttemptResponse:
+    result = await submit_quiz(session, user.id, quiz_id, payload, chat)
+    return _attempt_response(result)

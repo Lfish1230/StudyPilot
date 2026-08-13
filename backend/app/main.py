@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.ai.interfaces import ChatClient, ChunkSink, EmbeddingClient
 from app.ai.qwen import QwenChatClient, QwenEmbeddingClient
+from app.analytics.router import router as analytics_router
 from app.auth.router import router as auth_router
 from app.core.config import get_settings
 from app.core.database import SessionLocal
@@ -84,6 +85,7 @@ def create_app(
     app.include_router(documents_router)
     app.include_router(rag_router)
     app.include_router(quizzes_router)
+    app.include_router(analytics_router)
 
     @app.get("/health", tags=["system"])
     async def health() -> dict[str, str]:

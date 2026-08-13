@@ -140,3 +140,54 @@ class QuizQuestionResponse(BaseModel):
 
 class QuizDetailResponse(QuizSummaryResponse):
     questions: list[QuizQuestionResponse]
+
+
+class SubmittedAnswer(BaseModel):
+    question_id: UUID
+    answer: str = Field(min_length=1, max_length=5000)
+
+    @field_validator("answer")
+    @classmethod
+    def normalize_answer(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("answer must not be blank")
+        return value
+
+
+class QuizSubmission(BaseModel):
+    answers: list[SubmittedAnswer] = Field(min_length=1, max_length=10)
+
+    @model_validator(mode="after")
+    def question_ids_must_be_unique(self) -> "QuizSubmission":
+        question_ids = [answer.question_id for answer in self.answers]
+        if len(set(question_ids)) != len(question_ids):
+            raise ValueError("question ids must be unique")
+        return self
+
+
+class AnswerResultResponse(BaseModel):
+    question_id: UUID
+    type: str
+    prompt: str
+    user_answer: str
+    standard_answer: str
+    explanation: str
+    score: int
+    is_correct: bool
+    feedback: str
+    missing_points: list[str]
+    knowledge_point: str
+    source_document_id: UUID
+    source_document_name: str
+    source_page: int
+
+
+class QuizAttemptResponse(BaseModel):
+    id: UUID
+    quiz_id: UUID
+    total_score: int
+    max_score: int
+    percentage: float
+    submitted_at: datetime
+    answers: list[AnswerResultResponse]

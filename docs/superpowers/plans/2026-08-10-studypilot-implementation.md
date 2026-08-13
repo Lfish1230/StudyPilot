@@ -758,7 +758,7 @@ git commit -m "feat: generate validated course quizzes"
 - Consumes: quiz/question models and `ChatClient`.
 - Produces: `grade_multiple_choice`, `grade_short_answer`, attempts/answers, `POST /quizzes/{id}/submit`, `GET /courses/{id}/mistakes`, and `GET /courses/{id}/analytics`.
 
-- [ ] **Step 1: Write failing deterministic grading tests**
+- [x] **Step 1: Write failing deterministic grading tests**
 
 ```python
 def test_multiple_choice_is_graded_without_model():
@@ -775,19 +775,19 @@ def test_wrong_answer_is_a_mistake():
 
 Test missing answers, duplicate question IDs, foreign quiz, and resubmission policy. Choose exactly one attempt per user per quiz; a second submit returns `409 quiz_already_submitted`.
 
-- [ ] **Step 2: Implement objective and short-answer grading**
+- [x] **Step 2: Implement objective and short-answer grading**
 
 Multiple choice is programmatic. For short answers, request strict JSON `{score: 0..10, feedback: str, missing_points: list[str]}` using the stored standard answer and rubric. Invalid grading output retries once; if still invalid, roll back the entire attempt and return `grading_unavailable`.
 
-- [ ] **Step 3: Write failing analytics tests**
+- [x] **Step 3: Write failing analytics tests**
 
 Seed multiple attempts and assert total questions, attempts, average percent score, recent attempts, and weak topics. Define weak score as `wrong_count / answered_count`; order by weak score descending then answered count descending. A question is wrong when `score < 6`.
 
-- [ ] **Step 4: Implement submission transaction and aggregation queries**
+- [x] **Step 4: Implement submission transaction and aggregation queries**
 
 Persist the attempt and all answers only after every answer is graded. Return standard answer, explanation, feedback, score, and citation after submission. Mistakes are answer rows with score below 6. Analytics are SQL aggregations, not model output.
 
-- [ ] **Step 5: Migrate, verify, and commit**
+- [x] **Step 5: Migrate, verify, and commit**
 
 ```powershell
 cd backend
