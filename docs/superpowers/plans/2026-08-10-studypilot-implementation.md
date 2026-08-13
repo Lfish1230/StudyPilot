@@ -935,23 +935,23 @@ git commit -m "feat: add cited course chat experience"
 - Consumes: quiz, submission, mistake, and analytics APIs from Tasks 8–9.
 - Produces: quiz creation, answer forms, result details, mistake filtering, and course dashboard.
 
-- [ ] **Step 1: Write failing end-user quiz tests**
+- [x] **Step 1: Write failing end-user quiz tests**
 
 Test selecting only ready documents, question-count limits, hidden answers before submit, required answers, duplicate-submit prevention, objective and short-answer result rendering, citation links, empty mistakes, and quota errors.
 
-- [ ] **Step 2: Implement quiz builder and attempt forms**
+- [x] **Step 2: Implement quiz builder and attempt forms**
 
 Use discriminated question types from `contracts.ts`. Keep draft answers in component state keyed by question ID. After submission, replace the form with immutable per-question results; never request or infer standard answers before submission.
 
-- [ ] **Step 3: Write failing analytics presentation tests**
+- [x] **Step 3: Write failing analytics presentation tests**
 
 Assert total attempts, question count, average percentage, weak-topic order, recent attempts, and accessible empty state. Verify scores render without division-by-zero or `NaN`.
 
-- [ ] **Step 4: Implement mistakes and analytics**
+- [x] **Step 4: Implement mistakes and analytics**
 
 Render weak topics as an accessible table plus horizontal bars, not a chart-only view. Mistakes show the user's answer, standard answer, explanation, score, feedback, and source citation.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 ```powershell
 cd frontend

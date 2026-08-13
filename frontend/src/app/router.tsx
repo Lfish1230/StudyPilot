@@ -10,11 +10,12 @@ import { LoginPage } from "../features/auth/LoginPage";
 import { RegisterPage } from "../features/auth/RegisterPage";
 import { ChatPage } from "../features/chat/ChatPage";
 import { CoursesPage } from "../features/courses/CoursesPage";
-import {
-  CourseWorkspace,
-  WorkspacePlaceholder,
-} from "../features/courses/CourseWorkspace";
+import { CourseWorkspace } from "../features/courses/CourseWorkspace";
 import { DocumentsPage } from "../features/documents/DocumentsPage";
+import { AnalyticsPage } from "../features/analytics/AnalyticsPage";
+import { MistakesPage } from "../features/quizzes/MistakesPage";
+import { QuizAttemptPage } from "../features/quizzes/QuizAttemptPage";
+import { QuizListPage } from "../features/quizzes/QuizListPage";
 
 function ProtectedRoute() {
   const { user, isChecking } = useAuth();
@@ -49,9 +50,10 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate to="chat" replace /> },
           { path: "chat", element: <ChatPage /> },
           { path: "documents", element: <DocumentsPage /> },
-          { path: "quizzes", element: <WorkspacePlaceholder title="课程测验" /> },
-          { path: "mistakes", element: <WorkspacePlaceholder title="错题本" /> },
-          { path: "analytics", element: <WorkspacePlaceholder title="学习分析" /> },
+          { path: "quizzes", element: <QuizListPage /> },
+          { path: "quizzes/:quizId", element: <QuizAttemptPage /> },
+          { path: "mistakes", element: <MistakesPage /> },
+          { path: "analytics", element: <AnalyticsPage /> },
         ],
       },
     ],
