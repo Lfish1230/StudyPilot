@@ -2,7 +2,16 @@ from collections.abc import Awaitable, Callable
 from typing import Annotated, cast
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Request, Response, UploadFile, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Request,
+    Response,
+    UploadFile,
+    status,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import CurrentUser
@@ -46,6 +55,7 @@ async def upload_document(
     session: DatabaseSession,
     storage: Storage,
     scheduler: Scheduler,
+    background_tasks: BackgroundTasks,
     file: Annotated[UploadFile, File()],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> DocumentResponse:
@@ -60,7 +70,7 @@ async def upload_document(
         data,
         file.content_type,
     )
-    await scheduler(document.id)
+    background_tasks.add_task(scheduler, document.id)
     return DocumentResponse.model_validate(document)
 
 
@@ -98,8 +108,9 @@ async def retry_document(
     user: CurrentUser,
     session: DatabaseSession,
     scheduler: Scheduler,
+    background_tasks: BackgroundTasks,
 ) -> DocumentResponse:
     document = await get_owned_document(session, user.id, document_id)
     document = await prepare_document_retry(session, document)
-    await scheduler(document.id)
+    background_tasks.add_task(scheduler, document.id)
     return DocumentResponse.model_validate(document)

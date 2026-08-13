@@ -577,11 +577,11 @@ git commit -m "feat: process PDF documents into recoverable chunks"
 - Consumes: `TextChunk`, `EmbeddingClient`, `ChunkSink`, and `process_document()` from Task 5.
 - Produces: Qwen implementations of `EmbeddingClient.embed(texts: list[str]) -> list[list[float]]`, `ChatClient.complete(messages, response_format=None) -> ChatResult`, `PgVectorChunkSink`, `DocumentChunk`, `retrieve_chunks(course_id, query_vector, limit=5, max_distance=0.40)`, and `get_document_context(document_ids, token_budget)`.
 
-- [ ] **Step 1: Write failing provider contract tests**
+- [x] **Step 1: Write failing provider contract tests**
 
 Use `httpx.MockTransport` or an injected OpenAI client. Assert that embedding requests use `text-embedding-v4`, dimensions `1024`, and batch inputs; chat requests use `qwen-plus`; timeouts and 429/5xx responses retry at most twice; auth and validation errors do not retry; returned usage is normalized to `TokenUsage(input_tokens, output_tokens)`.
 
-- [ ] **Step 2: Implement provider interfaces and Qwen adapter**
+- [x] **Step 2: Implement provider interfaces and Qwen adapter**
 
 ```python
 class EmbeddingClient(Protocol):
@@ -599,21 +599,21 @@ class ChatClient(Protocol):
 
 Use the Async OpenAI client with the configured DashScope base URL. Validate every embedding has exactly 1024 floats. Use Tenacity with two retries after the original request and bounded exponential backoff. Emit one safe structured log per provider call containing request ID, provider, model, latency, input tokens, output tokens, and error category; never log prompts, PDF text, credentials, or full model responses.
 
-- [ ] **Step 3: Write a failing pgvector retrieval test**
+- [x] **Step 3: Write a failing pgvector retrieval test**
 
 Seed chunks for two courses and assert only the requested course is returned, results are distance ordered, at most five are returned, and results above `0.40` distance are excluded.
 
-- [ ] **Step 4: Implement chunk persistence and retrieval**
+- [x] **Step 4: Implement chunk persistence and retrieval**
 
 `DocumentChunk` has `document_id`, `course_id`, `page_number`, `content`, `token_count`, and `embedding Vector(1024)`. Add an HNSW cosine index after the table is created. Store embeddings in batches of at most 20 chunks.
 
 Use SQLAlchemy pgvector cosine distance and always filter by `course_id`; owner validation happens before repository calls. `get_document_context` filters selected document IDs, orders chunks by document then page, and stops before its explicit token budget.
 
-- [ ] **Step 5: Wire document processing to production adapters**
+- [x] **Step 5: Wire document processing to production adapters**
 
 Upload and retry routes schedule `process_document` through FastAPI `BackgroundTasks`, using a fresh session factory, `SupabaseObjectStorage`, `QwenEmbeddingClient`, and `PgVectorChunkSink`. The application lifespan calls `recover_stale_document_jobs(cutoff_minutes=15)` before accepting requests. Add an integration test proving upload reaches `ready` with fake storage/embedding adapters and persisted chunks.
 
-- [ ] **Step 6: Verify and commit**
+- [x] **Step 6: Verify and commit**
 
 ```powershell
 cd backend

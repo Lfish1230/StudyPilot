@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.ai.interfaces import ChunkSink, EmbeddingClient
 from app.ai.types import EmbeddingUnavailableError
+from app.core.errors import ServiceUnavailableError
 from app.documents.chunker import chunk_pages
 from app.documents.model import Document, DocumentStatus
 from app.documents.parser import (
@@ -108,6 +109,14 @@ async def process_document(
             document_id,
             "embedding_unavailable",
             "文档向量化暂时失败，请稍后重试。",
+        )
+        return
+    except ServiceUnavailableError:
+        await mark_document_failed(
+            session_factory,
+            document_id,
+            "storage_unavailable",
+            "文件存储暂时不可用，请稍后重试。",
         )
         return
 
