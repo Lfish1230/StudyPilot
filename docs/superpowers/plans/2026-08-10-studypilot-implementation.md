@@ -817,23 +817,23 @@ git commit -m "feat: grade quizzes and report learning analytics"
 - Consumes: auth and course HTTP contracts from Tasks 2–3.
 - Produces: `api.request<T>()`, authenticated route guard, `/login`, `/register`, `/courses`, and navigation to `/courses/:courseId/chat`.
 
-- [ ] **Step 1: Write failing auth and course UI tests**
+- [x] **Step 1: Write failing auth and course UI tests**
 
 Use Mock Service Worker. Assert successful login stores the token in `sessionStorage`, `/courses` redirects unauthenticated users to `/login`, API 401 clears auth, courses render newest first, create rejects blank names, and delete requires confirmation.
 
-- [ ] **Step 2: Implement a typed fetch client**
+- [x] **Step 2: Implement a typed fetch client**
 
 `api.request<T>` attaches `Authorization: Bearer`, parses the shared backend error shape, accepts `AbortSignal`, and throws `ApiError` with `status`, `code`, `message`, and `requestId`. Do not log tokens.
 
-- [ ] **Step 3: Implement routes and auth provider**
+- [x] **Step 3: Implement routes and auth provider**
 
 Use React Router and TanStack Query. The provider restores only the token, verifies it through `/auth/me`, and renders a loading state during verification. Logout clears session storage and query cache.
 
-- [ ] **Step 4: Implement the course list**
+- [x] **Step 4: Implement the course list**
 
 Render create form, responsive cards, empty state, error state, and delete flow. Use accessible labels and keyboard-operable buttons.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 ```powershell
 cd frontend
