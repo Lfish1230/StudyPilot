@@ -858,19 +858,19 @@ git commit -m "feat: add frontend authentication and courses"
 - Consumes: document routes and statuses from Tasks 4–5.
 - Produces: shared course sidebar, upload progress, status polling, retry/delete controls, and nested course routes.
 
-- [ ] **Step 1: Write failing document workflow tests**
+- [x] **Step 1: Write failing document workflow tests**
 
 Test valid PDF upload, client-side 20 MB rejection, non-PDF rejection, progress display, polling while `uploaded|processing`, stopping polling at `ready|failed`, scanned-PDF message, retry, delete, and foreign/missing course navigation.
 
-- [ ] **Step 2: Implement the workspace shell**
+- [x] **Step 2: Implement the workspace shell**
 
 Create the approved layout with top bar and side links for Q&A, documents, quizzes, mistakes, and analytics. Use `<Outlet />` for nested pages and collapse the sidebar below 900 px.
 
-- [ ] **Step 3: Implement document management**
+- [x] **Step 3: Implement document management**
 
 Upload with `XMLHttpRequest` only where progress events are required; use the typed fetch client elsewhere. Poll processing documents every 2 seconds and stop when none are pending. Display backend `failure_message` and a retry button for `failed`.
 
-- [ ] **Step 4: Verify and commit**
+- [x] **Step 4: Verify and commit**
 
 ```powershell
 cd frontend

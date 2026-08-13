@@ -9,6 +9,11 @@ import { useAuth } from "../features/auth/AuthProvider";
 import { LoginPage } from "../features/auth/LoginPage";
 import { RegisterPage } from "../features/auth/RegisterPage";
 import { CoursesPage } from "../features/courses/CoursesPage";
+import {
+  CourseWorkspace,
+  WorkspacePlaceholder,
+} from "../features/courses/CourseWorkspace";
+import { DocumentsPage } from "../features/documents/DocumentsPage";
 
 function ProtectedRoute() {
   const { user, isChecking } = useAuth();
@@ -28,15 +33,6 @@ function ProtectedRoute() {
   return <Outlet />;
 }
 
-function CoursePlaceholder() {
-  return (
-    <main className="loading-screen">
-      <h1>课程工作区</h1>
-      <p>文档与问答界面将在下一阶段接入。</p>
-    </main>
-  );
-}
-
 export const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/courses" replace /> },
   { path: "/login", element: <LoginPage /> },
@@ -45,7 +41,18 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       { path: "/courses", element: <CoursesPage /> },
-      { path: "/courses/:courseId/chat", element: <CoursePlaceholder /> },
+      {
+        path: "/courses/:courseId",
+        element: <CourseWorkspace />,
+        children: [
+          { index: true, element: <Navigate to="chat" replace /> },
+          { path: "chat", element: <WorkspacePlaceholder title="课程问答" /> },
+          { path: "documents", element: <DocumentsPage /> },
+          { path: "quizzes", element: <WorkspacePlaceholder title="课程测验" /> },
+          { path: "mistakes", element: <WorkspacePlaceholder title="错题本" /> },
+          { path: "analytics", element: <WorkspacePlaceholder title="学习分析" /> },
+        ],
+      },
     ],
   },
   { path: "*", element: <Navigate to="/courses" replace /> },
