@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.ai.interfaces import ChunkSink, EmbeddingClient
-from app.ai.qwen import QwenEmbeddingClient
+from app.ai.interfaces import ChatClient, ChunkSink, EmbeddingClient
+from app.ai.qwen import QwenChatClient, QwenEmbeddingClient
 from app.auth.router import router as auth_router
 from app.core.config import get_settings
 from app.core.database import SessionLocal
@@ -23,6 +23,7 @@ from app.documents.processor import process_document
 from app.documents.router import router as documents_router
 from app.documents.storage import ObjectStorage, create_object_storage
 from app.rag.repository import PgVectorChunkSink
+from app.rag.router import router as rag_router
 
 DocumentScheduler = Callable[[UUID], Awaitable[None]]
 
@@ -32,11 +33,13 @@ def create_app(
     document_scheduler: DocumentScheduler | None = None,
     embedding_client: EmbeddingClient | None = None,
     chunk_sink: ChunkSink | None = None,
+    chat_client: ChatClient | None = None,
 ) -> FastAPI:
     settings = get_settings()
     storage = object_storage or create_object_storage(settings)
     embeddings = embedding_client or QwenEmbeddingClient.from_settings(settings)
     sink = chunk_sink or PgVectorChunkSink(SessionLocal)
+    chat = chat_client or QwenChatClient.from_settings(settings)
 
     async def production_scheduler(document_id: UUID) -> None:
         await process_document(
@@ -59,6 +62,8 @@ def create_app(
     app = FastAPI(title="StudyPilot API", version="0.1.0", lifespan=lifespan)
     app.state.object_storage = storage
     app.state.document_scheduler = document_scheduler or production_scheduler
+    app.state.embedding_client = embeddings
+    app.state.chat_client = chat
 
     app.add_middleware(RequestIdMiddleware)
     app.add_middleware(
@@ -76,6 +81,7 @@ def create_app(
     app.include_router(auth_router)
     app.include_router(courses_router)
     app.include_router(documents_router)
+    app.include_router(rag_router)
 
     @app.get("/health", tags=["system"])
     async def health() -> dict[str, str]:

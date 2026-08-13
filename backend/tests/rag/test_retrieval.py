@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from app.core.database import SessionLocal
 from app.documents.chunker import TextChunk
-from app.documents.model import Document
+from app.documents.model import Document, DocumentStatus
 from app.documents.storage import FakeObjectStorage
 from app.main import create_app
 from app.rag.model import DocumentChunk
@@ -86,6 +86,15 @@ async def test_retrieval_is_course_scoped_ordered_limited_and_thresholded(
     )
 
     async with SessionLocal() as session:
+        first_document = await session.get(Document, document_a)
+        second_document = await session.get(Document, document_b)
+        assert first_document is not None
+        assert second_document is not None
+        first_document.status = DocumentStatus.READY
+        second_document.status = DocumentStatus.READY
+        await session.commit()
+
+    async with SessionLocal() as session:
         results = await retrieve_chunks(
             session, course_a, near, limit=5, max_distance=0.40
         )
@@ -93,6 +102,27 @@ async def test_retrieval_is_course_scoped_ordered_limited_and_thresholded(
     assert [result.source_id for result in results] == ["S1", "S2"]
     assert all(result.document_id == document_a for result in results)
     assert results[0].distance <= results[1].distance <= 0.40
+
+
+@pytest.mark.asyncio
+async def test_retrieval_excludes_chunks_from_non_ready_documents(
+    client: TestClient,
+    auth_headers: dict[str, str],
+) -> None:
+    course_id, document_id = create_course_and_document(
+        client, auth_headers, "处理中文档"
+    )
+    await PgVectorChunkSink(SessionLocal).replace(
+        document_id,
+        course_id,
+        [TextChunk(1, "stale chunk", 2)],
+        [unit_vector(0)],
+    )
+
+    async with SessionLocal() as session:
+        results = await retrieve_chunks(session, course_id, unit_vector(0))
+
+    assert results == []
 
 
 @pytest.mark.asyncio

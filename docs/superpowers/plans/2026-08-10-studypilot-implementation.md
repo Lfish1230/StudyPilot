@@ -640,7 +640,7 @@ git commit -m "feat: add model gateways and vector retrieval"
 - Consumes: `ChatClient`, `EmbeddingClient`, `retrieve_chunks`, `get_owned_course`.
 - Produces: conversations, messages, citations, `compose_answer(question, retrieved) -> AssistantAnswer`, `answer_question(user_id, course_id, conversation_id, question) -> AssistantAnswer`, and conversation routes.
 
-- [ ] **Step 1: Write failing grounded-answer service tests**
+- [x] **Step 1: Write failing grounded-answer service tests**
 
 Test these exact cases:
 
@@ -671,19 +671,19 @@ async def test_answer_contains_only_valid_citation_ids(rag_service):
 
 Also test prompt-injection text inside retrieved chunks is treated as quoted source data, a hallucinated citation ID is removed, and empty questions are rejected.
 
-- [ ] **Step 2: Implement RAG prompts and citation validation**
+- [x] **Step 2: Implement RAG prompts and citation validation**
 
 Number retrieved chunks `S1..S5`. The system prompt requires Chinese answers, citations in `[S1]` form, and refusal when unsupported. Parse cited IDs from the answer; persist only IDs present in retrieved context. If the model cites none for a non-refusal answer, return `answer_missing_citation` rather than silently accepting it.
 
-- [ ] **Step 3: Write failing conversation API tests**
+- [x] **Step 3: Write failing conversation API tests**
 
 Cover `POST /courses/{course_id}/conversations`, `GET /courses/{course_id}/conversations`, `GET /conversations/{id}/messages`, and `POST /conversations/{id}/messages`. Assert saved user and assistant messages, citation page/name/snippet, foreign-user 404, document-not-ready response, and daily quota response `429 question_quota_exceeded`.
 
-- [ ] **Step 4: Implement models, routes, and quotas**
+- [x] **Step 4: Implement models, routes, and quotas**
 
 Store user messages, assistant text, refusal flag, model, input/output tokens, latency, and citations. Count each user's UTC-day user messages before a model call; default limit is 50. Return citation snippets capped at 300 characters.
 
-- [ ] **Step 5: Migrate, verify, and commit**
+- [x] **Step 5: Migrate, verify, and commit**
 
 ```powershell
 cd backend

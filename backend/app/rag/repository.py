@@ -5,7 +5,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.documents.chunker import TextChunk
-from app.documents.model import Document
+from app.documents.model import Document, DocumentStatus
 from app.rag.model import DocumentChunk
 
 
@@ -78,6 +78,7 @@ async def retrieve_chunks(
             .join(Document, Document.id == DocumentChunk.document_id)
             .where(
                 DocumentChunk.course_id == course_id,
+                Document.status == DocumentStatus.READY,
                 distance <= max_distance,
             )
             .order_by(distance)
