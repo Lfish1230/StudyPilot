@@ -25,7 +25,7 @@ services:
       - key: DASHSCOPE_API_KEY
         sync: false
       - key: DASHSCOPE_BASE_URL
-        value: https://dashscope.aliyuncs.com/compatible-mode/v1
+        value: https://ws-tqrayom4st5ecmof.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
       - key: CHAT_MODEL
         value: qwen-plus
       - key: EMBEDDING_MODEL
