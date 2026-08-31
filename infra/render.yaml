@@ -1,9 +1,11 @@
 services:
   - type: web
-    name: studypilot-api
+    name: studypilot-lfish1230-api
     runtime: python
     plan: free
+    region: singapore
     rootDir: backend
+    autoDeployTrigger: checksPass
     buildCommand: pip install uv && uv sync --frozen --no-dev
     startCommand: uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
@@ -19,7 +21,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
-        sync: false
+        value: https://studypilot-lfish1230-web.onrender.com
       - key: DASHSCOPE_API_KEY
         sync: false
       - key: DASHSCOPE_BASE_URL
@@ -31,8 +33,33 @@ services:
       - key: EMBEDDING_DIMENSION
         value: "1024"
       - key: SUPABASE_URL
-        sync: false
+        value: https://dvqdwnqwhzrhgejzrtus.supabase.co
       - key: SUPABASE_SERVICE_KEY
         sync: false
       - key: SUPABASE_STORAGE_BUCKET
         value: course-pdfs
+
+  - type: web
+    name: studypilot-lfish1230-web
+    runtime: static
+    rootDir: frontend
+    autoDeployTrigger: checksPass
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://studypilot-lfish1230-api.onrender.com

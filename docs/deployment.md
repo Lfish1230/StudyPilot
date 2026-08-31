@@ -1,6 +1,6 @@
 # 部署指南
 
-推荐组合：Vercel 托管 `frontend`，Render 托管 `backend`，Supabase 提供 PostgreSQL、pgvector 与私有对象存储。仓库中的声明参考了 Render Blueprint 的 `rootDir` / `preDeployCommand` 和 Vercel 官方 Vite SPA rewrite 配置。
+推荐组合：Render Static Site 托管 `frontend`，Render Web Service 托管 `backend`，Supabase 提供 PostgreSQL、pgvector 与私有对象存储。仓库中的 Blueprint 可一次创建前后端两个免费服务。
 
 ## 1. Supabase
 
@@ -21,7 +21,7 @@
 | `AI_PROVIDER=qwen` | 线上禁止 `fake` |
 | `DATABASE_URL` | Supabase 异步 PostgreSQL 连接串 |
 | `JWT_SECRET` | 至少 32 字节随机值 |
-| `CORS_ORIGINS` | 精确的 Vercel HTTPS 域名；多个域名用逗号分隔 |
+| `CORS_ORIGINS` | 精确的前端 HTTPS 域名；Blueprint 已预设 Render 前端域名 |
 | `DASHSCOPE_API_KEY` | 百炼服务端密钥 |
 | `SUPABASE_URL` | Supabase Project URL |
 | `SUPABASE_SERVICE_KEY` | service-role key，仅后端保存 |
@@ -33,15 +33,17 @@ Blueprint 默认使用 Render 免费 Web Service：构建时运行 `uv sync --fr
 
 免费或休眠实例可能冷启动。前端会保留未成功发送的问题，但首次请求仍可能等待几十秒；正式演示前应先访问 `/health` 预热。
 
-## 3. Vercel 前端
+## 3. Render 前端
 
+- 服务类型：Static Site
 - Root Directory：`frontend`
-- Framework Preset：Vite
-- Build Command：`npm run build`
-- Output Directory：`dist`
-- 环境变量：`VITE_API_BASE_URL=https://<render-service>.onrender.com`
+- Build Command：`npm ci && npm run build`
+- Publish Directory：`dist`
+- 环境变量：`VITE_API_BASE_URL=https://studypilot-lfish1230-api.onrender.com`
 
-`frontend/vercel.json` 把深层路由重写到 `index.html`。部署后，把最终 Vercel 域名写回 Render 的 `CORS_ORIGINS`，重新部署后端。
+Blueprint 使用 `/* -> /index.html` rewrite 支持 React Router 深层路由，并设置基础安全响应头。若服务名称改变，必须同步更新前端的 `VITE_API_BASE_URL` 和后端的 `CORS_ORIGINS`，然后重新部署两个服务。
+
+Vercel 仍可作为备选：使用 `frontend/vercel.json` 部署，并将 Vercel HTTPS 域名写入后端 `CORS_ORIGINS`。
 
 ## 4. 可选演示账号
 
