@@ -29,7 +29,7 @@
 
 可调变量：`CHAT_MODEL`、`EMBEDDING_MODEL`、`EMBEDDING_DIMENSION`、`MAX_PDF_BYTES`、`MAX_PDF_PAGES`、三项 `DAILY_*_QUOTA`、`DOCUMENT_JOB_TIMEOUT_MINUTES`、`REQUEST_TIMEOUT_SECONDS`。
 
-Blueprint 在构建时运行 `uv sync --frozen --no-dev`，部署前运行 `uv run alembic upgrade head`，启动命令为 Uvicorn。Render 的 pre-deploy command 需要支持该能力的付费服务；若选择不支持它的套餐，应在每次发布前手动运行迁移，再部署应用。健康检查为 `/health`。
+Blueprint 默认使用 Render 免费 Web Service：构建时运行 `uv sync --frozen --no-dev`，启动时先运行 `uv run alembic upgrade head`，迁移成功后再启动 Uvicorn。单实例免费服务以这种方式保持数据库结构最新，不依赖付费的 pre-deploy command；升级到多实例方案前，应改回独立的 pre-deploy migration。健康检查为 `/health`。
 
 免费或休眠实例可能冷启动。前端会保留未成功发送的问题，但首次请求仍可能等待几十秒；正式演示前应先访问 `/health` 预热。
 
