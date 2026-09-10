@@ -8,7 +8,7 @@ from alembic import context
 from app.auth.model import User
 from app.core.config import get_settings
 from app.core.database import Base
-from app.core.database_url import escape_for_alembic
+from app.core.database_url import asyncpg_connect_args, escape_for_alembic
 
 del User
 
@@ -19,6 +19,7 @@ if config.config_file_name is not None:
 config.set_main_option(
     "sqlalchemy.url", escape_for_alembic(get_settings().database_url)
 )
+database_connect_args = asyncpg_connect_args(get_settings().database_url)
 target_metadata = Base.metadata
 
 
@@ -49,6 +50,7 @@ async def run_migrations_online() -> None:
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        connect_args=database_connect_args,
     )
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

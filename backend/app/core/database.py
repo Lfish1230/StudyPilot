@@ -9,6 +9,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.pool import NullPool
 
 from app.core.config import get_settings
+from app.core.database_url import asyncpg_connect_args
 
 
 class Base(DeclarativeBase):
@@ -16,7 +17,10 @@ class Base(DeclarativeBase):
 
 
 settings = get_settings()
-engine_options: dict[str, object] = {"pool_pre_ping": True}
+engine_options: dict[str, object] = {
+    "pool_pre_ping": True,
+    "connect_args": asyncpg_connect_args(settings.database_url),
+}
 if settings.environment in {"test", "testing"}:
     engine_options["poolclass"] = NullPool
 
