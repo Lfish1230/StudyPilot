@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -37,6 +37,7 @@ class MockXMLHttpRequest {
   static response = readyDocument;
   static status = 201;
   static sentFile: File | undefined;
+  static finishUpload: (() => void) | undefined;
   upload = new EventTarget();
   status = 0;
   responseText = "";
@@ -56,13 +57,13 @@ class MockXMLHttpRequest {
       total: 10,
     });
     this.upload.dispatchEvent(progress);
-    setTimeout(() => {
+    MockXMLHttpRequest.finishUpload = () => {
       this.status = MockXMLHttpRequest.status;
       this.responseText = JSON.stringify(MockXMLHttpRequest.response);
       for (const listener of this.listeners.get("load") ?? []) {
         listener.call(this, new Event("load"));
       }
-    }, 25);
+    };
   }
 }
 
@@ -93,6 +94,7 @@ describe("document management", () => {
     MockXMLHttpRequest.response = readyDocument;
     MockXMLHttpRequest.status = 201;
     MockXMLHttpRequest.sentFile = undefined;
+    MockXMLHttpRequest.finishUpload = undefined;
   });
 
   afterEach(() => {
@@ -108,7 +110,8 @@ describe("document management", () => {
     const file = new File(["pdf"], "notes.pdf", { type: "application/pdf" });
     await user.upload(input, file);
 
-    expect(screen.getByText("50%")).toBeInTheDocument();
+    expect(await screen.findByText("50%")).toBeInTheDocument();
+    await act(async () => MockXMLHttpRequest.finishUpload?.());
     expect(await screen.findByText("network.pdf")).toBeInTheDocument();
     expect(MockXMLHttpRequest.sentFile?.name).toBe("notes.pdf");
   });
