@@ -16,4 +16,7 @@ outputs/
 frontend/test-results/
 frontend/playwright-report/
 frontend/e2e/artifacts/
+tmp/
+/%SystemDrive%/
+/backend/%SystemDrive%/
 .DS_Store

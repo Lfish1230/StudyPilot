@@ -2,7 +2,18 @@
 
 面向大学生课程资料的 AI 学习助手：上传文字版 PDF，获得可追溯到页码的问答，生成基于原文的测验，并从错题中定位薄弱知识点。
 
-> 作品集状态：核心产品、自动化测试、20 题 RAG 评测基准和部署声明已完成。公开体验地址与演示账号将在首次部署后补充；仓库不会提交演示密码。
+> 作品集状态：核心产品、自动化测试、20 题 RAG 评测基准设计、云端部署和真实模型冒烟验收均已完成。仓库不会提交任何演示密码。
+
+[![CI](https://github.com/Lfish1230/StudyPilot/actions/workflows/ci.yml/badge.svg)](https://github.com/Lfish1230/StudyPilot/actions/workflows/ci.yml)
+
+## 在线体验
+
+- Web 应用：[https://studypilot-lfish1230-web.onrender.com](https://studypilot-lfish1230-web.onrender.com)
+- API 文档：[https://studypilot-lfish1230-api.onrender.com/docs](https://studypilot-lfish1230-api.onrender.com/docs)
+- 健康检查：[https://studypilot-lfish1230-api.onrender.com/health](https://studypilot-lfish1230-api.onrender.com/health)
+- 可直接上传的合成课程资料：[StudyPilot 线上验收 PDF](output/pdf/studypilot-e2e-source.pdf)
+
+首次访问 Render 免费实例可能需要等待几十秒唤醒。体验者可自行注册临时账号；示例 PDF 完全由项目生成，不含个人或真实业务信息。
 
 ## 要解决的问题
 
@@ -37,7 +48,7 @@ React/Vite → FastAPI → PostgreSQL + pgvector
 - FastAPI、Pydantic、SQLAlchemy 2、Alembic、PyMuPDF
 - PostgreSQL 16、pgvector、Supabase Storage
 - 阿里云百炼 `qwen-plus`、`text-embedding-v4`
-- GitHub Actions、Render、Vercel
+- GitHub Actions、Render、Supabase
 
 ## 本地运行
 
@@ -113,6 +124,10 @@ powershell -ExecutionPolicy Bypass -File .\evals\download_source.ps1
 
 数据许可、问题标注、指标定义和报告字段见 [评测说明](evals/README.md)。
 
+### 线上冒烟验收
+
+2026-09-11 使用仓库内 3 页合成资料对生产环境执行了一次真实端到端验收：PDF 成功上传、解析和向量化；`qwen-plus` 正确回答资料中的 250 毫秒重试间隔，并返回第 1 页引用；单选题生成、提交评分和课程分析接口全部成功。该结果用于证明部署链路可运行，不替代上方 20 题固定基准。
+
 ## 验证
 
 ```powershell
@@ -132,7 +147,7 @@ CI 使用 `pgvector/pgvector:pg16`，不需要任何真实模型或存储密钥�
 
 ## 部署与演示账号
 
-按 [部署指南](docs/deployment.md) 配置 Vercel、Render 和 Supabase。`backend/scripts/seed_demo.py` 只从环境读取 `DEMO_EMAIL` 与 `DEMO_PASSWORD`，可幂等创建一个空示例课程。请勿把真实密码写入 README、提交记录或 CI。
+当前生产环境使用 Render 托管前后端、Supabase 提供数据库和私有对象存储。完整配置见 [部署指南](docs/deployment.md)。`backend/scripts/seed_demo.py` 只从环境读取 `DEMO_EMAIL` 与 `DEMO_PASSWORD`，可幂等创建一个空示例课程。请勿把真实密码写入 README、提交记录或 CI。
 
 ## 已知限制
 
@@ -140,7 +155,7 @@ CI 使用 `pgvector/pgvector:pg16`，不需要任何真实模型或存储密钥�
 - 文档处理使用进程内后台任务；实例意外退出后依赖启动恢复，不等同于持久任务队列。
 - 检索是固定阈值与 Top-5，没有 reranker 或查询改写。
 - 简答题评分仍是模型判断，适合作为学习反馈，不适合正式考试定分。
-- 尚未发布公开在线地址，也尚未运行会产生费用的完整真实模型基准。
+- 已完成小规模真实模型冒烟验收，但尚未运行会产生更多费用的 20 题完整真实模型基准。
 
 ## Roadmap
 
